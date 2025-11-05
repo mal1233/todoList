@@ -1,0 +1,40 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Clean kitchen",
+      "completed": false,
+      "list": "Home"
+    },
+    {
+      "id": 2,
+      "title": "Do laundry",
+      "completed": false,
+      "list": "Home"
+    },
+    {
+      "id": 3,
+      "title": "Finish math homework",
+      "completed": false,
+      "list": "School"
+    },
+    {
+      "id": 4,
+      "title": "Study for exam",
+      "completed": false,
+      "list": "School"
+    },
+    {
+      "id": 5,
+      "title": "Submit project",
+      "completed": false,
+      "list": "Work"
+    },
+    {
+      "id": 6,
+      "title": "Team meeting",
+      "completed": true,
+      "list": "Work"
+    }
+  ]
+}
