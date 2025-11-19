@@ -79,6 +79,8 @@ body {
   padding: 40px;
   background-color: #f0f0f5;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .section-label {
@@ -105,8 +107,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: red;
-  /* Temporary background color for debugging */
+
 }
 
 .task-row {
@@ -116,6 +117,11 @@ body {
   border-radius: 8px;
   transition: background-color 0.2s ease;
 }
+
+.task-row.completed .task-label {
+  text-decoration: line-through;
+}
+
 
 .task-row:hover {
   background-color: #f4f4f6;
@@ -129,6 +135,8 @@ body {
 }
 
 .checkbox-wrapper input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
   appearance: none;
   width: 18px;
   height: 18px;
@@ -136,7 +144,22 @@ body {
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
+}
+
+/* Layout for add-task so the text input doesn't overlap the button */
+.add-task {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.add-task input[type="text"] {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #e2e2e5;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
 .checkbox-wrapper input[type="checkbox"]:checked {
@@ -144,7 +167,13 @@ body {
   border-color: #0078d4;
 }
 
-.checkbox-wrapper input[type="checkbox"]:checked::after {
+.checkbox-wrapper input[type="checkbox"]:checked+.checkbox-style {
+  background-color: #0078d4;
+  border-color: #0078d4;
+  position: relative;
+}
+
+.checkbox-wrapper input[type="checkbox"]:checked+.checkbox-style::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -154,6 +183,17 @@ body {
   border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.checkbox-style {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #888;
+  border-radius: 50%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  background: transparent;
 }
 
 .task-label {

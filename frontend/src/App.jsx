@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import TaskList from "./components/TaskList";
 
 // Main Application Component
 function App() {
@@ -9,15 +10,18 @@ function App() {
 
   // Fetch tasks from the backend API on component mount
   useEffect(() => {
-    fetch('http://localhost:3000/tasks')
+    fetch('http://localhost:3000/api/tasks')
       .then((res) => res.json())
-      .then((data) => setTasks(data))
+      .then((data) => {
+        console.log("Fetched tasks:", data);
+        setTasks(data.tasks);
+      })
       .catch((err) => console.error('Failed to fetch tasks:', err));
   }, []);
 
   // Filter tasks based on the selected list
   const filteredTasks = tasks.filter(
-    task => task.list.trim().toLowerCase() === selectedList.trim().toLowerCase()
+    task => task.list && task.list.trim().toLowerCase() === selectedList.trim().toLowerCase()
   );
 
   // Handle adding a new task
@@ -42,6 +46,30 @@ function App() {
     }
   }
 
+  // Handle toggling task completion
+  async function handleToggleComplete(id, newStatus) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: newStatus })
+      });
+
+      const updatedTask = await response.json();
+
+      // Update state locally
+      let newTaskList = [...tasks];
+      const taskIndex = newTaskList.findIndex(t => t.id === id);
+      if (taskIndex !== -1) {
+        newTaskList[taskIndex] = updatedTask;
+        setTasks(newTaskList);
+      }
+    } catch (err) {
+      console.error("Failed to update task:", err);
+    }
+  }
+
+  // Render the application UI
   return (
     <div className="app-shell">
       {/* Sidebar */}
@@ -79,19 +107,13 @@ function App() {
           />
           <button onClick={handleAddTask}>Add</button>
         </div>
-
-        {/* Vertical Task List */}
-        <ul className="vertical-task-list">
-          {filteredTasks.map((task) => (
-            <li key={task.id} className={`task-row ${task.completed ? 'completed' : ''}`}>
-              <label className="checkbox-wrapper">
-                <input type="checkbox" checked={task.completed} readOnly />
-                <span className="checkbox-style"></span>
-              </label>
-              <span className="task-label">{task.title}</span>
-            </li>
-          ))}
-        </ul>
+        <div>
+          {/* Vertical Task List */}
+          <TaskList
+            tasks={[...filteredTasks].sort((a, b) => Number(a.completed) - Number(b.completed))}
+            onToggle={handleToggleComplete}
+          />
+        </div>
       </main>
     </div>
   );

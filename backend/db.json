@@ -3,7 +3,7 @@
     {
       "id": 1,
       "title": "Clean kitchen",
-      "completed": false,
+      "completed": true,
       "list": "Home"
     },
     {
@@ -21,7 +21,7 @@
     {
       "id": 4,
       "title": "Study for exam",
-      "completed": false,
+      "completed": true,
       "list": "School"
     },
     {
@@ -33,7 +33,25 @@
     {
       "id": 6,
       "title": "Team meeting",
-      "completed": true,
+      "completed": false,
+      "list": "Work"
+    },
+    {
+      "id": 1763144300141,
+      "title": "s",
+      "completed": false,
+      "list": "Work"
+    },
+    {
+      "id": 1763144652366,
+      "title": "add",
+      "completed": false,
+      "list": "Work"
+    },
+    {
+      "id": 1763144779690,
+      "title": "test",
+      "completed": false,
       "list": "Work"
     }
   ]
