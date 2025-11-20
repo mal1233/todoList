@@ -1,11 +1,14 @@
-const express = require('express'); // Import Express framework
+import express from 'express'; // const express = require('express'); // Import Express framework
+import fs from 'fs'; // const fs = require('fs'); // File system module for reading/writing files
+import { PrismaClient } from "@prisma/client"
+
+import cors from 'cors'; // Import CORS middleware const cors = require('cors');
+
+const DB_FILE = "./db.json"; // Path to the JSON file acting as a database
 const app = express(); // Create an Express application
 const port = 3000; // Define the port number
-const fs = require('fs'); // File system module for reading/writing files
-const DB_FILE = "./db.json"; // Path to the JSON file acting as a database
-const { pool } = require('pg'); // PostgreSQL client
-const cors = require('cors');
 
+const prisma = new PrismaClient();
 
 function readTasks() { // Function to read tasks from the JSON file
     const data = fs.readFileSync(DB_FILE);
@@ -22,8 +25,8 @@ app.get("/", (req, res) => {
     res.send("✅ Server connected and running");
 });
 
-app.get("/api/tasks", (req, res) => { // GET endpoint to retrieve all tasks
-    const tasks = readTasks();
+app.get("/api/tasks", async (req, res) => { // GET endpoint to retrieve all tasks
+    const tasks = await prisma.task.findMany();
     res.json(tasks);
 });
 
