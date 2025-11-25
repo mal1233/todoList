@@ -3,6 +3,7 @@ import fs from 'fs'; // const fs = require('fs'); // File system module for read
 import { PrismaClient } from "@prisma/client"
 
 import cors from 'cors'; // Import CORS middleware const cors = require('cors');
+import { parse } from 'path';
 
 const DB_FILE = "./db.json"; // Path to the JSON file acting as a database
 const app = express(); // Create an Express application
@@ -48,6 +49,24 @@ app.post("/api/tasks", async (req, res) => { // POST endpoint to create a new ta
 
     // step 3 return the new Task
     res.status(201).json(newTask);
+});
+
+app.get("/api/tasks/:id", async (req, res) => {
+    // step 1 get id from params
+    let TaskId = req.params.id;
+    TaskId = parseInt(TaskId);
+
+    // step 2 talk to prisma to find a task
+    let foundTask = await prisma.task.findUnique({
+        where: { id: TaskId }
+    });
+
+    // step 3 return the new task
+    if (foundTask) {
+        res.status(200).json(foundTask);
+    } else {
+        res.status(404).json("Task Not Found");
+    }
 });
 
 app.put("/api/tasks/:id", async (req, res) => {
