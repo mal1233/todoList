@@ -30,25 +30,24 @@ app.get("/api/tasks", async (req, res) => { // GET endpoint to retrieve all task
     res.json(tasks);
 });
 
-app.post("/tasks", (req, res) => { // POST endpoint to create a new task
-    try {
-        const tasks = readTasks();
+app.post("/api/tasks", async (req, res) => { // POST endpoint to create a new task
+    // step 1: get info from req.body
+    const BodyTitle = req.body.title;
+    const BodyCompleted = req.body.completed;
+    const BodyList = req.body.list;
 
-        const newTask = {
-            id: Date.now(),
-            title: req.body.title,
-            completed: false,
-            list: req.body.list || "General"
-        };
 
-        tasks.tasks.push(newTask);
-        writeTasks(tasks);
+    // step 2: use prisma.task.create to create new task in db
+    const newTask = await prisma.task.create({
+        data: {
+            title: BodyTitle,
+            completed: BodyCompleted,
+            list: BodyList
+        }
+    });
 
-        res.status(201).json(newTask);
-    } catch (error) {
-        console.error("POST /tasks error:", error);
-        res.status(500).json({ error: "Something went wrong on the server." });
-    }
+    // step 3 return the new Task
+    res.status(201).json(newTask);
 });
 
 app.put("/api/tasks/:id", async (req, res) => {
