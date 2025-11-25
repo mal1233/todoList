@@ -31,6 +31,23 @@ app.get("/api/tasks", async (req, res) => { // GET endpoint to retrieve all task
     res.json(tasks);
 });
 
+app.get("/api/tasks/list/:listName", async (req, res) => {
+    const tasks = await prisma.task.findMany({
+        where: { list: req.params.listName }
+    });
+    res.json(tasks);
+});
+
+app.get("/api/tasks/completed/:isCompleted", async (req, res) => {
+    const isCompleted = req.params.isCompleted === 'true';
+    const tasks = await prisma.task.findMany({
+        where: { completed: isCompleted }
+    });
+    res.json(tasks);
+});
+
+
+
 app.post("/api/tasks", async (req, res) => { // POST endpoint to create a new task
     // step 1: get info from req.body
     const BodyTitle = req.body.title;
@@ -70,39 +87,29 @@ app.get("/api/tasks/:id", async (req, res) => {
 });
 
 app.put("/api/tasks/:id", async (req, res) => {
-    const { id } = req.params;
-    const { completed } = req.body;
+    const TaskId = parseInt(req.params.id); // Get task ID from URL parameters
+    const { title, completed, list } = req.body;
 
-    let tasks = readTasks();
-    const taskIndex = tasks.tasks.findIndex(t => t.id === parseInt(id));
+    // Update the task in the database using Prisma
+    const updatedTask = await prisma.task.update({
+        where: { id: TaskId },
+        data: { title, completed, list }
+    });
 
-    if (taskIndex === -1) {
-        return res.status(404).json({ message: "Task not found" });
-    }
-
-    tasks.tasks[taskIndex].completed = completed;
-    writeTasks(tasks);
-
-    res.json(tasks.tasks[taskIndex]);
+    res.json(updatedTask); // Return the updated task as JSON response
 });
 
 
 
-app.delete("/tasks/:id", (req, res) => { // DELETE endpoint to delete a task by ID
-    let tasks = readTasks();
-    const taskId = parseInt(req.params.id);
-    const initialLength = tasks.length;
+app.delete("/api/tasks/:id", async (req, res) => {
+    const TaskId = parseInt(req.params.id); // Get task ID from URL parameters
 
-    tasks = tasks.filter(t => t.id !== taskId);
-
-    if (tasks.length === initialLength) {
-        return res.status(404).json({ message: "Task not found" });
-    }
-
-    writeTasks(tasks);
-    res.json({ message: "Task deleted" });
+    // Delete the task from the database using Prisma   
+    await prisma.task.delete({
+        where: { id: TaskId }
+    });
+    res.status(204).end(); // Respond with 204 
 });
-
 
 app.listen(port, () => { // Start the server
     console.log(`Server is running on http://localhost:${port}`);
