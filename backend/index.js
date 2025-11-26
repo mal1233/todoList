@@ -1,9 +1,14 @@
 import express from 'express'; // const express = require('express'); // Import Express framework
 import fs from 'fs'; // const fs = require('fs'); // File system module for reading/writing files
 import { PrismaClient } from "@prisma/client"
+import path from 'path';
+import { fileURLToPath } from "url";
 
 import cors from 'cors'; // Import CORS middleware const cors = require('cors');
 import { parse } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const DB_FILE = "./db.json"; // Path to the JSON file acting as a database
 const app = express(); // Create an Express application
@@ -19,6 +24,7 @@ function writeTasks(tasks) { // Function to write tasks to the JSON file
     fs.writeFileSync(DB_FILE, JSON.stringify(tasks, null, 2));
 }
 
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Middleware to parse JSON request bodies
 
@@ -110,6 +116,11 @@ app.delete("/api/tasks/:id", async (req, res) => {
     });
     res.status(204).end(); // Respond with 204 
 });
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
 
 app.listen(port, () => { // Start the server
     console.log(`Server is running on http://localhost:${port}`);
